@@ -8,7 +8,7 @@
   "scripts": {
     "start": "yarn run watch",
     "lint": "eslint --fix . && echo 'Lint complete.' || echo 'Lint failure'",
-    "test": "riteway -r esm src/**/*.test.js src/**/*.test.jsx | tap-nirvana && echo 'Test complete.'",
+    "test": "riteway -r esm src/**/*.test.js src/**/*.test.jsx | tap-color && echo 'Test complete.'",
     "test:watch": "chokidar src/**/*.test.js src/**/*.test.jsx -c \"clear && yarn run -s test\" --initial --silent",
     "watch": "chokidar src -c \"clear && yarn run -s lint && yarn run -s test\" --initial --silent"
   },
@@ -23,6 +23,6 @@
     "esm": "3.2.25",
     "prettier": "2.0.5",
     "riteway": "6.1.2",
-    "tap-nirvana": "1.1.0"
+    "tap-color": "1.2.0"
   }
 }
