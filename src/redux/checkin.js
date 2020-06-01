@@ -1,3 +1,5 @@
+import { replace } from '../utils.js';
+
 /*
 const createUser = ({ id = 0, name = 'John Doe' } = {}) => ({
   id,
@@ -25,6 +27,20 @@ const createCheckin = ({
   teamId,
   ownerId,
   date,
+});
+
+const createTask = ({
+  id = '0',
+  description = 'Do something',
+  checkinId = '0',
+  userId = '0',
+  completed = false,
+}) => ({
+  id,
+  description,
+  checkinId,
+  userId,
+  completed,
 });
 */
 export const addUser = ({ id = '0', name = 'Anonymous' } = {}) => ({
@@ -62,6 +78,23 @@ export const addCheckin = ({
     createdAt,
     tasks,
     blockers,
+  },
+});
+
+export const addTask = ({
+  id = '0',
+  description = 'Do something',
+  checkinId = '0',
+  userId = '0',
+  completed = false,
+} = {}) => ({
+  type: 'checkin/ADD_TASK',
+  payload: {
+    id,
+    description,
+    checkinId,
+    userId,
+    completed,
   },
 });
 
@@ -108,6 +141,29 @@ export default function reducer(state = getInitialState(), action = {}) {
         ...state,
         checkins: [...state.checkins, action.payload],
       };
+    case addTask().type: {
+      // If the user doesn't exist, don't modify the state
+      // TODO Show error message
+      if (!state.users[action.payload.userId]) {
+        return state;
+      }
+
+      const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+
+      // If the checkin doesn't exist, don't modify the state
+      // TODO Show error message
+      if (!state.checkins[checkinIndex]) {
+        return state;
+      }
+
+      return {
+        ...state,
+        checkins: replace(state.checkins, checkinIndex, {
+          ...state.checkins[checkinIndex],
+          tasks: [...state.checkins[checkinIndex].tasks, action.payload],
+        }),
+      };
+    }
     default:
       return state;
   }
