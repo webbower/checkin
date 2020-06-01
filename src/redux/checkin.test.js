@@ -1,5 +1,5 @@
 import { describe } from 'riteway';
-import { default as reducer, addUser, addTeam } from './checkin.js';
+import { default as reducer, addUser, addTeam, addCheckin } from './checkin.js';
 
 // TODO 26-05
 // √ Replace `expected: getInitialState()` with test-only `createTestState()` factory
@@ -8,9 +8,10 @@ import { default as reducer, addUser, addTeam } from './checkin.js';
 // √ Don't refactor out state slices. State is not complex enough.
 // - Action creators can conditionally dispatch one of multiple possible actions
 
-const createTestState = ({ users = {}, teams = {} } = {}) => ({
+const createTestState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
   users,
   teams,
+  checkins,
 });
 
 const createTestUser = ({ id = '0', name = 'Anonymous' } = {}) => ({ id, name });
@@ -20,6 +21,22 @@ const createTestTeam = ({ id = '0', name = 'Team 1', ownerId = '0', users = [] }
   name,
   ownerId,
   users,
+});
+
+const createTestCheckin = ({
+  id = '0',
+  userId = '0',
+  teamId = '0',
+  createdAt = Date.now(),
+  tasks = [],
+  blockers = [],
+} = {}) => ({
+  id,
+  userId,
+  teamId,
+  createdAt,
+  tasks,
+  blockers,
 });
 
 describe('checkin: reducer()', async (assert) => {
@@ -124,6 +141,62 @@ describe('checkin: adding teams', async (assert) => {
       teams: {
         '1': createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id, '2'] }),
       },
+    }),
+  });
+});
+
+describe('checkin: adding checkins', async (assert) => {
+  const owner = createTestUser({ id: '1' });
+  const team = createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id] });
+  const createBaseCheckinTestState = ({
+    users = {
+      [owner.id]: owner,
+    },
+    teams = {
+      [team.id]: team,
+    },
+    checkins = [],
+  } = {}) =>
+    createTestState({
+      users,
+      teams,
+      checkins,
+    });
+  const getInitialCheckinActions = () => [
+    addUser({ id: owner.id }),
+    addTeam({ id: team.id, ownerId: owner.id }),
+  ];
+  assert({
+    given: 'adding a checkin for an existing user and team',
+    should: 'should add the checkin to the state',
+    actual: getInitialCheckinActions()
+      .concat([
+        addCheckin({ id: '0', userId: owner.id, teamId: team.id, createdAt: 1591044882455 }),
+      ])
+      .reduce(reducer, reducer()),
+    expected: createBaseCheckinTestState({
+      checkins: [
+        createTestCheckin({ id: '0', userId: owner.id, teamId: team.id, createdAt: 1591044882455 }),
+      ],
+    }),
+  });
+
+  assert({
+    given: 'adding a checkin for a nonexistent user',
+    should: 'not modify state',
+    actual: reducer(undefined, addCheckin({ id: '1', userId: owner.id })),
+    expected: createTestState(),
+  });
+
+  assert({
+    given: 'adding a checkin for an existing user and a nonexistent team',
+    should: 'not modify state',
+    actual: getInitialCheckinActions()
+      .slice(0, 1)
+      .concat([addCheckin({ id: '1', teamId: team.id, userId: owner.id })])
+      .reduce(reducer, reducer()),
+    expected: createTestState({
+      users: { [owner.id]: owner },
     }),
   });
 });

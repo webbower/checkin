@@ -10,6 +10,22 @@ const createTeam = ({ id = 0, name = 'Team 1', ownerId = 1, users: [] } = {}) =>
   ownerId,
   users,
 });
+
+const createCheckin = ({
+  id = 0,
+  taskIds = [],
+  blockerIds = [],
+  teamId = 0,
+  ownerId = 0,
+  date = Date.now(),
+} = {}) => ({
+  id,
+  taskIds,
+  blockerIds,
+  teamId,
+  ownerId,
+  date,
+});
 */
 export const addUser = ({ id = '0', name = 'Anonymous' } = {}) => ({
   type: 'checkin/ADD_USER',
@@ -30,10 +46,30 @@ export const addTeam = ({ id = '0', name = 'Team 1', ownerId = '0', users = [] }
   },
 });
 
+export const addCheckin = ({
+  id = '0',
+  userId = '0',
+  teamId = '0',
+  createdAt = Date.now(),
+  tasks = [],
+  blockers = [],
+} = {}) => ({
+  type: 'checkin/ADD_CHECKIN',
+  payload: {
+    id,
+    userId,
+    teamId,
+    createdAt,
+    tasks,
+    blockers,
+  },
+});
+
 // Initial State
-export const getInitialState = ({ users = {}, teams = {} } = {}) => ({
+export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
   users,
   teams,
+  checkins,
 });
 
 // Reducer
@@ -60,6 +96,17 @@ export default function reducer(state = getInitialState(), action = {}) {
           ...state.teams,
           [action.payload.id]: action.payload,
         },
+      };
+    case addCheckin().type:
+      // If the user or team doesn't exist, don't modify the state
+      // TODO Show error message
+      if (!state.users[action.payload.userId] || !state.teams[action.payload.teamId]) {
+        return state;
+      }
+
+      return {
+        ...state,
+        checkins: [...state.checkins, action.payload],
       };
     default:
       return state;
