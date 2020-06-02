@@ -20,7 +20,7 @@ const createTestState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
 
 const createTestUser = ({ id = '0', name = 'Anonymous' } = {}) => ({ id, name });
 
-const createTestTeam = ({ id = '0', name = 'Team 1', ownerId = '0', users = [] } = {}) => ({
+const createTestTeam = ({ id = '0', name = `Team ${id}`, ownerId = '0', users = [] } = {}) => ({
   id,
   name,
   ownerId,

@@ -51,7 +51,7 @@ export const addUser = ({ id = '0', name = 'Anonymous' } = {}) => ({
   },
 });
 
-export const addTeam = ({ id = '0', name = 'Team 1', ownerId = '0', users = [] } = {}) => ({
+export const addTeam = ({ id = '0', name = `Team ${id}`, ownerId = '0', users = [] } = {}) => ({
   type: 'checkin/ADD_TEAM',
   payload: {
     id,
