@@ -1,5 +1,4 @@
 import { describe } from 'riteway';
-import { replace } from '../utils.js';
 import { default as reducer, addUser, addTeam, addCheckin, addTask } from './checkin.js';
 
 // TODO 26-05
@@ -9,21 +8,14 @@ import { default as reducer, addUser, addTeam, addCheckin, addTask } from './che
 // √ Don't refactor out state slices. State is not complex enough.
 // - Action creators can conditionally dispatch one of multiple possible actions
 
-const createTestState = ({ users = {}, teams = {}, checkins = [], tasks = [] } = {}) => ({
+// TODO 01-06
+// √ Remove logic from `createTestState()` regarding zipping checkins and tasks
+// √ Use variables instead of repeated literal data in tests
+
+const createTestState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
   users,
   teams,
-  checkins: tasks.reduce((cs, task) => {
-    const checkinIndex = cs.findIndex((c) => c.id === task.checkinId);
-    if (checkinIndex > -1) {
-      const checkin = cs[checkinIndex];
-      return replace(cs, checkinIndex, {
-        ...checkin,
-        tasks: [...checkin.tasks, task],
-      });
-    }
-
-    return cs;
-  }, checkins),
+  checkins,
 });
 
 const createTestUser = ({ id = '0', name = 'Anonymous' } = {}) => ({ id, name });
@@ -174,6 +166,8 @@ describe('checkin: adding teams', async (assert) => {
 describe('checkin: adding checkins', async (assert) => {
   const owner = createTestUser({ id: '1' });
   const team = createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id] });
+  const checkinId = '1';
+  const checkinCreatedAtTimestamp = 1591044882455;
   const createBaseCheckinTestState = ({
     users = {
       [owner.id]: owner,
@@ -197,12 +191,22 @@ describe('checkin: adding checkins', async (assert) => {
     should: 'should add the checkin to the state',
     actual: getInitialCheckinActions()
       .concat([
-        addCheckin({ id: '0', userId: owner.id, teamId: team.id, createdAt: 1591044882455 }),
+        addCheckin({
+          id: checkinId,
+          userId: owner.id,
+          teamId: team.id,
+          createdAt: checkinCreatedAtTimestamp,
+        }),
       ])
       .reduce(reducer, reducer()),
     expected: createBaseCheckinTestState({
       checkins: [
-        createTestCheckin({ id: '0', userId: owner.id, teamId: team.id, createdAt: 1591044882455 }),
+        createTestCheckin({
+          id: checkinId,
+          userId: owner.id,
+          teamId: team.id,
+          createdAt: checkinCreatedAtTimestamp,
+        }),
       ],
     }),
   });
@@ -236,6 +240,10 @@ describe('checkin: adding tasks', async (assert) => {
     teamId: team.id,
     createdAt: 1591044882455,
   });
+  const user2Id = '2';
+  const team2Id = '2';
+  const checkin2Id = '2';
+  const checkin2CreatedAtTimestamp = 1591044882456;
   const createBaseTasksTestState = ({
     users = {
       [owner.id]: owner,
@@ -244,18 +252,16 @@ describe('checkin: adding tasks', async (assert) => {
       [team.id]: team,
     },
     checkins = [checkin],
-    tasks = [],
   } = {}) =>
     createTestState({
       users,
       teams,
       checkins,
-      tasks,
     });
   const getInitialTaskActions = () => [
     addUser({ id: owner.id }),
     addTeam({ id: team.id, ownerId: owner.id }),
-    addCheckin({ id: checkin.id, userId: owner.id, teamId: team.id, createdAt: 1591044882455 }),
+    addCheckin({ id: checkin.id, userId: owner.id, teamId: team.id, createdAt: checkin.createdAt }),
   ];
 
   assert({
@@ -266,11 +272,16 @@ describe('checkin: adding tasks', async (assert) => {
       addTask({ description: 'Build Checkin App', checkinId: checkin.id, userId: owner.id }),
     ].reduce(reducer, reducer()),
     expected: createBaseTasksTestState({
-      tasks: [
-        createTestTask({
-          description: 'Build Checkin App',
-          checkinId: checkin.id,
-          userId: owner.id,
+      checkins: [
+        createTestCheckin({
+          ...checkin,
+          tasks: [
+            createTestTask({
+              description: 'Build Checkin App',
+              checkinId: checkin.id,
+              userId: owner.id,
+            }),
+          ],
         }),
       ],
     }),
@@ -301,34 +312,56 @@ describe('checkin: adding tasks', async (assert) => {
     should: 'add the tasks to the state',
     actual: [
       ...getInitialTaskActions(),
-      addUser({ id: '2' }),
-      addTeam({ id: '2', ownerId: '2' }),
+      addUser({ id: user2Id }),
+      addTeam({ id: team2Id, ownerId: user2Id }),
       addTask({ description: 'Build Checkin App', checkinId: checkin.id, userId: owner.id }),
-      addCheckin({ id: '2', userId: '2', teamId: '2', createdAt: 1591044882456 }),
-      addTask({ description: 'Push code to GitHub', checkinId: '2', userId: '2' }),
-      addTask({ description: 'Review GitHub PRs', checkinId: '2', userId: owner.id }),
+      addCheckin({
+        id: checkin2Id,
+        userId: user2Id,
+        teamId: team2Id,
+        createdAt: checkin2CreatedAtTimestamp,
+      }),
+      addTask({ description: 'Push code to GitHub', checkinId: checkin2Id, userId: user2Id }),
+      addTask({ description: 'Review GitHub PRs', checkinId: checkin2Id, userId: owner.id }),
     ].reduce(reducer, reducer()),
     expected: createBaseTasksTestState({
       users: {
         [owner.id]: owner,
-        '2': createTestUser({ id: '2' }),
+        [user2Id]: createTestUser({ id: user2Id }),
       },
       teams: {
         [team.id]: team,
-        '2': createTestTeam({ id: '2', ownerId: '2', users: ['2'] }),
+        [team2Id]: createTestTeam({ id: team2Id, ownerId: user2Id, users: [user2Id] }),
       },
       checkins: [
-        checkin,
-        createTestCheckin({ id: '2', userId: '2', teamId: '2', createdAt: 1591044882456 }),
-      ],
-      tasks: [
-        createTestTask({
-          description: 'Build Checkin App',
-          checkinId: checkin.id,
-          userId: owner.id,
+        createTestCheckin({
+          ...checkin,
+          tasks: [
+            createTestTask({
+              description: 'Build Checkin App',
+              checkinId: checkin.id,
+              userId: owner.id,
+            }),
+          ],
         }),
-        createTestTask({ description: 'Push code to GitHub', checkinId: '2', userId: '2' }),
-        createTestTask({ description: 'Review GitHub PRs', checkinId: '2', userId: owner.id }),
+        createTestCheckin({
+          id: checkin2Id,
+          userId: user2Id,
+          teamId: team2Id,
+          createdAt: checkin2CreatedAtTimestamp,
+          tasks: [
+            createTestTask({
+              description: 'Push code to GitHub',
+              checkinId: checkin2Id,
+              userId: user2Id,
+            }),
+            createTestTask({
+              description: 'Review GitHub PRs',
+              checkinId: checkin2Id,
+              userId: owner.id,
+            }),
+          ],
+        }),
       ],
     }),
   });
