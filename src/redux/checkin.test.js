@@ -1,5 +1,12 @@
 import { describe } from 'riteway';
-import { default as reducer, addUser, addTeam, addCheckin, addTask } from './checkin.js';
+import {
+  default as reducer,
+  addUser,
+  addTeam,
+  addCheckin,
+  addTask,
+  addBlocker,
+} from './checkin.js';
 
 // TODO 26-05
 // √ Replace `expected: getInitialState()` with test-only `createTestState()` factory
@@ -55,6 +62,18 @@ const createTestTask = ({
   checkinId,
   userId,
   completed,
+});
+
+const createTestBlocker = ({
+  id = '0',
+  description = 'A wall',
+  checkinId = '0',
+  userId = '0',
+} = {}) => ({
+  id,
+  description,
+  checkinId,
+  userId,
 });
 
 describe('checkin: reducer()', async (assert) => {
@@ -357,6 +376,142 @@ describe('checkin: adding tasks', async (assert) => {
             }),
             createTestTask({
               description: 'Review GitHub PRs',
+              checkinId: checkin2Id,
+              userId: owner.id,
+            }),
+          ],
+        }),
+      ],
+    }),
+  });
+});
+
+describe('checkin: adding blockers', async (assert) => {
+  const owner = createTestUser({ id: '1' });
+  const team = createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id] });
+  const checkin = createTestCheckin({
+    id: '1',
+    userId: owner.id,
+    teamId: team.id,
+    createdAt: 1591044882455,
+  });
+  const user2Id = '2';
+  const team2Id = '2';
+  const checkin2Id = '2';
+  const checkin2CreatedAtTimestamp = 1591044882456;
+  const createBaseBlockersTestState = ({
+    users = {
+      [owner.id]: owner,
+    },
+    teams = {
+      [team.id]: team,
+    },
+    checkins = [checkin],
+  } = {}) =>
+    createTestState({
+      users,
+      teams,
+      checkins,
+    });
+  const getInitialBlockerActions = () => [
+    addUser({ id: owner.id }),
+    addTeam({ id: team.id, ownerId: owner.id }),
+    addCheckin({ id: checkin.id, userId: owner.id, teamId: team.id, createdAt: checkin.createdAt }),
+  ];
+
+  assert({
+    given: 'adding a blocker to an existing checkin by an existing user',
+    should: 'ad the blocker to the state',
+    actual: [
+      ...getInitialBlockerActions(),
+      addBlocker({ description: 'Life gets in the way', checkinId: checkin.id, userId: owner.id }),
+    ].reduce(reducer, reducer()),
+    expected: createBaseBlockersTestState({
+      checkins: [
+        createTestCheckin({
+          ...checkin,
+          blockers: [
+            createTestBlocker({
+              description: 'Life gets in the way',
+              checkinId: checkin.id,
+              userId: owner.id,
+            }),
+          ],
+        }),
+      ],
+    }),
+  });
+
+  assert({
+    given: 'adding a blocker for a non-existent user',
+    should: 'should not modify state',
+    actual: [
+      ...getInitialBlockerActions(),
+      addBlocker({ description: 'Life gets in the way', checkinId: checkin.id, userId: user2Id }),
+    ].reduce(reducer, reducer()),
+    expected: createBaseBlockersTestState(),
+  });
+
+  assert({
+    given: 'adding a task to a non-existent checkin',
+    should: 'should not modify state',
+    actual: [
+      ...getInitialBlockerActions(),
+      addBlocker({ description: 'Life gets in the way', checkinId: checkin2Id, userId: owner.id }),
+    ].reduce(reducer, reducer()),
+    expected: createBaseBlockersTestState(),
+  });
+
+  assert({
+    given: 'adding multiple tasks to existing checkins by existing users',
+    should: 'add the tasks to the state',
+    actual: [
+      ...getInitialBlockerActions(),
+      addUser({ id: user2Id }),
+      addTeam({ id: team2Id, ownerId: user2Id }),
+      addBlocker({ description: 'Life gets in the way', checkinId: checkin.id, userId: owner.id }),
+      addCheckin({
+        id: checkin2Id,
+        userId: user2Id,
+        teamId: team2Id,
+        createdAt: checkin2CreatedAtTimestamp,
+      }),
+      addBlocker({ description: 'My dog ate my code', checkinId: checkin2Id, userId: user2Id }),
+      addBlocker({ description: 'My computer died', checkinId: checkin2Id, userId: owner.id }),
+    ].reduce(reducer, reducer()),
+    expected: createBaseBlockersTestState({
+      users: {
+        [owner.id]: owner,
+        [user2Id]: createTestUser({ id: user2Id }),
+      },
+      teams: {
+        [team.id]: team,
+        [team2Id]: createTestTeam({ id: team2Id, ownerId: user2Id, users: [user2Id] }),
+      },
+      checkins: [
+        createTestCheckin({
+          ...checkin,
+          blockers: [
+            createTestBlocker({
+              description: 'Life gets in the way',
+              checkinId: checkin.id,
+              userId: owner.id,
+            }),
+          ],
+        }),
+        createTestCheckin({
+          id: checkin2Id,
+          userId: user2Id,
+          teamId: team2Id,
+          createdAt: checkin2CreatedAtTimestamp,
+          blockers: [
+            createTestBlocker({
+              description: 'My dog ate my code',
+              checkinId: checkin2Id,
+              userId: user2Id,
+            }),
+            createTestBlocker({
+              description: 'My computer died',
               checkinId: checkin2Id,
               userId: owner.id,
             }),

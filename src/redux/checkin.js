@@ -42,6 +42,13 @@ const createTask = ({
   userId,
   completed,
 });
+
+const createBlocker = ({ id = '1', description = 'A wall', checkinId = 0, userId = '0' }) => ({
+  id,
+  description,
+  checkinId,
+  userId,
+});
 */
 export const addUser = ({ id = '0', name = 'Anonymous' } = {}) => ({
   type: 'checkin/ADD_USER',
@@ -95,6 +102,21 @@ export const addTask = ({
     checkinId,
     userId,
     completed,
+  },
+});
+
+export const addBlocker = ({
+  id = '0',
+  description = 'A wall',
+  checkinId = '0',
+  userId = '0',
+} = {}) => ({
+  type: 'checkin/ADD_BLOCKER',
+  payload: {
+    id,
+    description,
+    checkinId,
+    userId,
   },
 });
 
@@ -161,6 +183,29 @@ export default function reducer(state = getInitialState(), action = {}) {
         checkins: replace(state.checkins, checkinIndex, {
           ...state.checkins[checkinIndex],
           tasks: [...state.checkins[checkinIndex].tasks, action.payload],
+        }),
+      };
+    }
+    case addBlocker().type: {
+      // If the user doesn't exist, don't modify the state
+      // TODO Show error message
+      if (!state.users[action.payload.userId]) {
+        return state;
+      }
+
+      const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+
+      // If the checkin doesn't exist, don't modify the state
+      // TODO Show error message
+      if (!state.checkins[checkinIndex]) {
+        return state;
+      }
+
+      return {
+        ...state,
+        checkins: replace(state.checkins, checkinIndex, {
+          ...state.checkins[checkinIndex],
+          blockers: [...state.checkins[checkinIndex].blockers, action.payload],
         }),
       };
     }
