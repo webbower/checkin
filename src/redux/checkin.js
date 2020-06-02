@@ -1,4 +1,7 @@
-import { replace } from '../utils.js';
+import produce from 'immer';
+
+// TODO 01-06
+// √ Use immer for complex state updates
 
 /*
 const createUser = ({ id = 0, name = 'John Doe' } = {}) => ({
@@ -129,87 +132,65 @@ export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) 
 
 // Reducer
 export default function reducer(state = getInitialState(), action = {}) {
-  switch (action.type) {
-    case addUser().type:
-      return {
-        ...state,
-        users: {
-          ...state.users,
-          [action.payload.id]: action.payload,
-        },
-      };
-    case addTeam().type:
-      // If the owner doesn't exist, don't modify the state
-      // TODO Show error message
-      if (!state.users[action.payload.ownerId]) {
-        return state;
+  return produce(state, (draft) => {
+    switch (action.type) {
+      case addUser().type:
+        draft.users[action.payload.id] = action.payload;
+        return;
+      case addTeam().type:
+        // If the owner doesn't exist, don't modify the state
+        // TODO Show error message
+        if (!state.users[action.payload.ownerId]) {
+          return;
+        }
+
+        draft.teams[action.payload.id] = action.payload;
+        return;
+      case addCheckin().type:
+        // If the user or team doesn't exist, don't modify the state
+        // TODO Show error message
+        if (!state.users[action.payload.userId] || !state.teams[action.payload.teamId]) {
+          return;
+        }
+
+        draft.checkins.push(action.payload);
+        return;
+      case addTask().type: {
+        // If the user doesn't exist, don't modify the state
+        // TODO Show error message
+        if (!state.users[action.payload.userId]) {
+          return;
+        }
+
+        const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+
+        // If the checkin doesn't exist, don't modify the state
+        // TODO Show error message
+        if (!state.checkins[checkinIndex]) {
+          return;
+        }
+
+        draft.checkins[checkinIndex].tasks.push(action.payload);
+        return;
       }
+      case addBlocker().type: {
+        // If the user doesn't exist, don't modify the state
+        // TODO Show error message
+        if (!state.users[action.payload.userId]) {
+          return;
+        }
 
-      return {
-        ...state,
-        teams: {
-          ...state.teams,
-          [action.payload.id]: action.payload,
-        },
-      };
-    case addCheckin().type:
-      // If the user or team doesn't exist, don't modify the state
-      // TODO Show error message
-      if (!state.users[action.payload.userId] || !state.teams[action.payload.teamId]) {
-        return state;
+        const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+
+        // If the checkin doesn't exist, don't modify the state
+        // TODO Show error message
+        if (!state.checkins[checkinIndex]) {
+          return;
+        }
+
+        draft.checkins[checkinIndex].blockers.push(action.payload);
+        return;
       }
-
-      return {
-        ...state,
-        checkins: [...state.checkins, action.payload],
-      };
-    case addTask().type: {
-      // If the user doesn't exist, don't modify the state
-      // TODO Show error message
-      if (!state.users[action.payload.userId]) {
-        return state;
-      }
-
-      const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
-
-      // If the checkin doesn't exist, don't modify the state
-      // TODO Show error message
-      if (!state.checkins[checkinIndex]) {
-        return state;
-      }
-
-      return {
-        ...state,
-        checkins: replace(state.checkins, checkinIndex, {
-          ...state.checkins[checkinIndex],
-          tasks: [...state.checkins[checkinIndex].tasks, action.payload],
-        }),
-      };
     }
-    case addBlocker().type: {
-      // If the user doesn't exist, don't modify the state
-      // TODO Show error message
-      if (!state.users[action.payload.userId]) {
-        return state;
-      }
-
-      const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
-
-      // If the checkin doesn't exist, don't modify the state
-      // TODO Show error message
-      if (!state.checkins[checkinIndex]) {
-        return state;
-      }
-
-      return {
-        ...state,
-        checkins: replace(state.checkins, checkinIndex, {
-          ...state.checkins[checkinIndex],
-          blockers: [...state.checkins[checkinIndex].blockers, action.payload],
-        }),
-      };
-    }
-    default:
-      return state;
-  }
+  });
 }

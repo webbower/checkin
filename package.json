@@ -24,5 +24,8 @@
     "prettier": "2.0.5",
     "riteway": "6.1.2",
     "tap-color": "1.2.0"
+  },
+  "dependencies": {
+    "immer": "6.0.9"
   }
 }
