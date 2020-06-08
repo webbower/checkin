@@ -7,4 +7,5 @@ export {
   addTask,
   addBlocker,
   getInitialState,
+  getUsersList,
 } from './checkin.js';

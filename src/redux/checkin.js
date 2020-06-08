@@ -123,6 +123,9 @@ export const addBlocker = ({
   },
 });
 
+// Selectors
+export const getUsersList = (state) => Object.entries(state.users).map(([, user]) => user);
+
 // Initial State
 export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
   users,
