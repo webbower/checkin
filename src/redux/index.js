@@ -8,4 +8,5 @@ export {
   addBlocker,
   getInitialState,
   getUsersList,
+  getTeamsList,
 } from './checkin.js';

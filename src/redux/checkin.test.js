@@ -7,8 +7,9 @@ import {
   addTask,
   addBlocker,
   getUsersList,
+  getTeamsList,
 } from './checkin.js';
-import { createTestUser } from './testing-utils.js';
+import { createTestUser, createTestTeam } from './testing-utils.js';
 
 // TODO 26-05
 // √ Replace `expected: getInitialState()` with test-only `createTestState()` factory
@@ -25,13 +26,6 @@ const createTestState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
   users,
   teams,
   checkins,
-});
-
-const createTestTeam = ({ id = '0', name = `Team ${id}`, ownerId = '0', users = [] } = {}) => ({
-  id,
-  name,
-  ownerId,
-  users,
 });
 
 const createTestCheckin = ({
@@ -541,5 +535,36 @@ describe('checkin selectors: getUsersList', async (assert) => {
       })
     ),
     expected: [{ id: '1', name: 'Bob' }],
+  });
+});
+
+describe('checkin selectors: getTeamsList', async (assert) => {
+  assert({
+    given: 'no teams in state',
+    should: 'return an empty array',
+    actual: getTeamsList(createTestState()),
+    expected: [],
+  });
+
+  assert({
+    given: 'teams in state',
+    should: 'return an array or teams',
+    actual: getTeamsList(
+      createTestState({
+        users: {
+          '1': createTestUser({ id: '1', name: 'Bob' }),
+          '2': createTestUser({ id: '2', name: 'Jane' }),
+        },
+        teams: {
+          '12345': createTestTeam({
+            id: '12345',
+            name: 'The First Team',
+            ownerId: '2',
+            users: ['2', '1'],
+          }),
+        },
+      })
+    ),
+    expected: [{ id: '12345', name: 'The First Team', users: ['Jane', 'Bob'] }],
   });
 });

@@ -13,7 +13,7 @@ const store = configureStore(
         name: 'Matt',
       },
     },
-    team: {
+    teams: {
       '1': {
         id: '1',
         name: 'The First Team',

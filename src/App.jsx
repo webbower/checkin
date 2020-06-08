@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import './App.css';
 
 import { UsersPage } from './components/users-page';
+import { TeamsPage } from './components/teams-page';
 
 class App extends React.Component {
   render() {
@@ -16,11 +17,17 @@ class App extends React.Component {
               <li>
                 <Link to="/users.html">Users</Link>
               </li>
+              <li>
+                <Link to="/teams.html">Teams</Link>
+              </li>
             </ul>
           </nav>
           <Switch>
             <Route path="/users.html">
               <UsersPage />
+            </Route>
+            <Route path="/teams.html">
+              <TeamsPage />
             </Route>
           </Switch>
         </div>
