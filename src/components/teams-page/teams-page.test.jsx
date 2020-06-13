@@ -47,9 +47,9 @@ describe('<TeamsPage> output', async (assert) => {
       given: 'an array of teams',
       should: 'display the list of teams',
       actual: [
-        $('.teams-list').text().trim().includes('12345'),
-        $('.teams-list').text().trim().includes('The First Team'),
-        $('.teams-list').text().trim().includes('Jane, Bob'),
+        $('.teams-list').text().includes('12345'),
+        $('.teams-list').text().includes('The First Team'),
+        $('.teams-list').text().includes('Jane, Bob'),
       ],
       expected: [true, true, true],
     });

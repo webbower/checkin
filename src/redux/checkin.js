@@ -1,4 +1,5 @@
 import produce from 'immer';
+import { pipe, prop, joinOn } from '../utils';
 
 // TODO 01-06
 // √ Use immer for complex state updates
@@ -124,13 +125,13 @@ export const addBlocker = ({
 });
 
 // Selectors
-export const getUsersList = (state) => Object.entries(state.users).map(([, user]) => user);
+export const getUsersList = pipe(prop('users'), Object.values);
 
 export const getTeamsList = (state) =>
-  Object.entries(state.teams).map(([, team]) => ({
+  Object.values(state.teams).map((team) => ({
     id: team.id,
     name: team.name,
-    users: team.users.map((id) => (state.users[id] || {}).name),
+    users: team.users.map(pipe(joinOn(state.users), prop('name'))),
   }));
 
 // Initial State

@@ -413,14 +413,12 @@ describe('checkin: adding blockers', async (assert) => {
     addCheckin({ id: checkin.id, userId: owner.id, teamId: team.id, createdAt: checkin.createdAt }),
   ];
 
-  assert({
-    given: 'adding a blocker to an existing checkin by an existing user',
-    should: 'ad the blocker to the state',
-    actual: [
+  {
+    const actual = [
       ...getInitialBlockerActions(),
       addBlocker({ description: 'Life gets in the way', checkinId: checkin.id, userId: owner.id }),
-    ].reduce(reducer, reducer()),
-    expected: createBaseBlockersTestState({
+    ].reduce(reducer, reducer());
+    const expected = createBaseBlockersTestState({
       checkins: [
         createTestCheckin({
           ...checkin,
@@ -433,8 +431,15 @@ describe('checkin: adding blockers', async (assert) => {
           ],
         }),
       ],
-    }),
-  });
+    });
+
+    assert({
+      given: 'adding a blocker to an existing checkin by an existing user',
+      should: 'ad the blocker to the state',
+      actual,
+      expected,
+    });
+  }
 
   assert({
     given: 'adding a blocker for a non-existent user',
@@ -456,10 +461,8 @@ describe('checkin: adding blockers', async (assert) => {
     expected: createBaseBlockersTestState(),
   });
 
-  assert({
-    given: 'adding multiple tasks to existing checkins by existing users',
-    should: 'add the tasks to the state',
-    actual: [
+  {
+    const actual = [
       ...getInitialBlockerActions(),
       addUser({ id: user2Id }),
       addTeam({ id: team2Id, ownerId: user2Id }),
@@ -472,8 +475,8 @@ describe('checkin: adding blockers', async (assert) => {
       }),
       addBlocker({ description: 'My dog ate my code', checkinId: checkin2Id, userId: user2Id }),
       addBlocker({ description: 'My computer died', checkinId: checkin2Id, userId: owner.id }),
-    ].reduce(reducer, reducer()),
-    expected: createBaseBlockersTestState({
+    ].reduce(reducer, reducer());
+    const expected = createBaseBlockersTestState({
       users: {
         [owner.id]: owner,
         [user2Id]: createTestUser({ id: user2Id }),
@@ -512,8 +515,15 @@ describe('checkin: adding blockers', async (assert) => {
           ],
         }),
       ],
-    }),
-  });
+    });
+
+    assert({
+      given: 'adding multiple tasks to existing checkins by existing users',
+      should: 'add the tasks to the state',
+      actual,
+      expected,
+    });
+  }
 });
 
 describe('checkin selectors: getUsersList', async (assert) => {
@@ -526,7 +536,7 @@ describe('checkin selectors: getUsersList', async (assert) => {
 
   assert({
     given: 'users in state',
-    should: 'return an array or users',
+    should: 'return an array of users',
     actual: getUsersList(
       createTestState({
         users: {
@@ -546,10 +556,8 @@ describe('checkin selectors: getTeamsList', async (assert) => {
     expected: [],
   });
 
-  assert({
-    given: 'teams in state',
-    should: 'return an array or teams',
-    actual: getTeamsList(
+  {
+    const actual = getTeamsList(
       createTestState({
         users: {
           '1': createTestUser({ id: '1', name: 'Bob' }),
@@ -564,7 +572,14 @@ describe('checkin selectors: getTeamsList', async (assert) => {
           }),
         },
       })
-    ),
-    expected: [{ id: '12345', name: 'The First Team', users: ['Jane', 'Bob'] }],
-  });
+    );
+    const expected = [{ id: '12345', name: 'The First Team', users: ['Jane', 'Bob'] }];
+
+    assert({
+      given: 'teams in state',
+      should: 'return an array of teams',
+      actual,
+      expected,
+    });
+  }
 });

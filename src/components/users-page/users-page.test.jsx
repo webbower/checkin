@@ -38,10 +38,7 @@ describe('<UsersPage> output', async (assert) => {
     assert({
       given: 'an array of users',
       should: 'display the list of users',
-      actual: [
-        $('.users-list').text().trim().includes('12345'),
-        $('.users-list').text().trim().includes('Bob'),
-      ],
+      actual: [$('.users-list').text().includes('12345'), $('.users-list').text().includes('Bob')],
       expected: [true, true],
     });
 
