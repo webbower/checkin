@@ -1,8 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { Heading } from '../heading';
+import { Layout } from '../../components/layout';
+import { Heading } from '../../components/heading';
+
 import { getUsersList } from '../../redux';
 
 const propTypes = {
@@ -23,7 +24,7 @@ const mapStateToProps = (state) => ({
 });
 
 const UsersPage = ({ users }) => (
-  <div>
+  <Layout pageTitle="Manage Users">
     <Heading level={2}>Users</Heading>
 
     <form>
@@ -68,7 +69,7 @@ const UsersPage = ({ users }) => (
         </tbody>
       </table>
     </form>
-  </div>
+  </Layout>
 );
 
 UsersPage.propTypes = propTypes;

@@ -1,4 +1,3 @@
-import React from 'react';
 import render from 'riteway/render-component';
 import { describe } from 'riteway';
 

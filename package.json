@@ -6,6 +6,9 @@
   "author": "Matt Bower <matt@webbower.com>",
   "license": "MIT",
   "scripts": {
+    "dev:next": "next dev -p 3001",
+    "build:next": "next build",
+    "start:next": "next start",
     "start": "yarn run serve",
     "dev": "yarn run watch",
     "serve": "webpack-dev-server --mode development",
@@ -43,12 +46,14 @@
   "dependencies": {
     "@hot-loader/react-dom": "16.13.0",
     "immer": "6.0.9",
+    "next": "9.4.4",
     "prop-types": "15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-hot-loader": "4.12.21",
     "react-redux": "7.2.0",
     "react-router-dom": "5.2.0",
-    "redux": "4.0.5"
+    "redux": "4.0.5",
+    "redux-devtools-extension": "2.13.8"
   }
 }

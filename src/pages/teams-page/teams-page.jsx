@@ -1,8 +1,9 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { Heading } from '../heading';
+import { Layout } from '../../components/layout';
+import { Heading } from '../../components/heading';
+
 import { getTeamsList } from '../../redux';
 
 const propTypes = {
@@ -24,7 +25,7 @@ const mapStateToProps = (state) => ({
 });
 
 const TeamsPage = ({ teams }) => (
-  <div>
+  <Layout pageTitle="Manage Teams">
     <Heading level={2}>Teams</Heading>
 
     <form>
@@ -72,7 +73,7 @@ const TeamsPage = ({ teams }) => (
         </tbody>
       </table>
     </form>
-  </div>
+  </Layout>
 );
 
 TeamsPage.propTypes = propTypes;

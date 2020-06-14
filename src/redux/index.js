@@ -1,4 +1,4 @@
-export { default as configureStore } from './store.js';
+export { default as configureStore, useStore } from './store.js';
 export {
   default as reducer,
   addUser,
