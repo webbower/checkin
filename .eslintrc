@@ -5,14 +5,45 @@
     "es6": true,
     "node": true
   },
-  "plugins": [],
-  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "plugins": ["import", "react", "react-hooks"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2018
   },
-  "settings": {},
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
     "linebreak-style": ["error", "unix"]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["*.js", "*.jsx"],
+      "rules": {
+        "import/no-named-as-default": "off",
+        "react/no-unescaped-entities": ["error", { "forbid": [">", "\"", "}"] }]
+      }
+    },
+    {
+      "files": ["*.jsx", "pages/_app.js"],
+      "rules": {
+        "react/react-in-jsx-scope": "off"
+      }
+    },
+    {
+      "files": ["pages/_app.js"],
+      "rules": {
+        "react/prop-types": "off"
+      }
+    }
+  ]
 }
