@@ -9,4 +9,5 @@ export {
   getInitialState,
   getUsersList,
   getTeamsList,
+  getTeamCheckinSummary,
 } from './checkin.js';

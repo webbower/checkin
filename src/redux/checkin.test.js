@@ -8,6 +8,7 @@ import {
   addBlocker,
   getUsersList,
   getTeamsList,
+  getTeamCheckinSummary,
 } from './checkin.js';
 import { createTestUser, createTestTeam } from './testing-utils.js';
 
@@ -578,6 +579,98 @@ describe('checkin selectors: getTeamsList', async (assert) => {
     assert({
       given: 'teams in state',
       should: 'return an array of teams',
+      actual,
+      expected,
+    });
+  }
+});
+
+describe('checkin selectors: getTeamCheckinSummary()', async (assert) => {
+  const teamId = '1';
+  const teamName = 'The First Team';
+  const checkinCreatedAtTimestamp = 1591044882455;
+  const team = createTestTeam({
+    id: teamId,
+    name: teamName,
+  });
+
+  assert({
+    given: 'no team with a matching ID in state',
+    should: 'return an empty object',
+    actual: getTeamCheckinSummary('54321')(createTestState()),
+    expected: {},
+  });
+
+  assert({
+    given: 'a team with matching ID in state but no checkins',
+    should: 'return the team data with checkins as empty array',
+    actual: getTeamCheckinSummary(teamId)(createTestState({ teams: { [teamId]: team } })),
+    expected: {
+      id: teamId,
+      name: teamName,
+      checkins: [],
+    },
+  });
+
+  {
+    const actual = getTeamCheckinSummary(teamId)(
+      createTestState({
+        users: {
+          '1': createTestUser({ id: '1', name: 'Bob' }),
+          '2': createTestUser({ id: '2', name: 'Jane' }),
+        },
+        teams: {
+          [teamId]: createTestTeam({
+            id: teamId,
+            name: teamName,
+            ownerId: '2',
+            users: ['2', '1'],
+          }),
+        },
+        checkins: [
+          createTestCheckin({
+            id: '1',
+            userId: '1',
+            teamId,
+            createdAt: checkinCreatedAtTimestamp,
+            tasks: [],
+            blockers: [],
+          }),
+          createTestCheckin({
+            id: '2',
+            userId: '2',
+            teamId,
+            createdAt: checkinCreatedAtTimestamp + 1000,
+            tasks: [],
+            blockers: [],
+          }),
+        ],
+      })
+    );
+    const expected = {
+      id: teamId,
+      name: teamName,
+      checkins: [
+        {
+          id: '1',
+          user: 'Bob',
+          createdAt: checkinCreatedAtTimestamp,
+          tasks: [],
+          blockers: [],
+        },
+        {
+          id: '2',
+          user: 'Jane',
+          createdAt: checkinCreatedAtTimestamp + 1000,
+          tasks: [],
+          blockers: [],
+        },
+      ],
+    };
+
+    assert({
+      given: 'a matching team in state with checkins',
+      should: 'return the team data with checkins in chronological order',
       actual,
       expected,
     });

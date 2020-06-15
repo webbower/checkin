@@ -125,14 +125,49 @@ export const addBlocker = ({
 });
 
 // Selectors
+const getUserNameFromStateById = (state) => pipe(joinOn(state.users), prop('name'));
+
 export const getUsersList = pipe(prop('users'), Object.values);
 
 export const getTeamsList = (state) =>
   Object.values(state.teams).map((team) => ({
     id: team.id,
     name: team.name,
-    users: team.users.map(pipe(joinOn(state.users), prop('name'))),
+    users: team.users.map(getUserNameFromStateById(state)),
   }));
+
+const getSortedCheckinsForTeam = (teamId, state) => {
+  return state.checkins
+    .filter((checkin) => checkin.teamId === teamId)
+    .sort((aCheckin, bCheckin) => {
+      if (aCheckin.createdAt < bCheckin.createdAt) {
+        return -1;
+      } else if (aCheckin.createdAt > bCheckin.createdAt) {
+        return 1;
+      }
+
+      return 0;
+    });
+};
+
+export const getTeamCheckinSummary = (teamId) => (state) => {
+  if (!state.teams[teamId]) {
+    return {};
+  }
+
+  const team = state.teams[teamId];
+  return {
+    id: team.id,
+    name: team.name,
+    checkins: getSortedCheckinsForTeam(teamId, state).map((checkin) => ({
+      id: checkin.id,
+      user: getUserNameFromStateById(state)(checkin.userId),
+      createdAt: checkin.createdAt,
+      tasks: checkin.tasks,
+      blockers: checkin.blockers,
+    })),
+  };
+};
 
 // Initial State
 export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({

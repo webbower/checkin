@@ -44,8 +44,9 @@ describe('<CheckinsIndexPage> output', async (assert) => {
       actual: [
         $('.teams-list').text().includes(teamId),
         $('.teams-list').text().includes(teamName),
+        $('.teams-list').text().includes('View Checkins'),
       ],
-      expected: [true, true],
+      expected: [true, true, true],
     });
   }
 });

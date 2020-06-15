@@ -32,6 +32,7 @@
     "tap-color": "1.2.0"
   },
   "dependencies": {
+    "date-fns": "2.14.0",
     "immer": "6.0.9",
     "next": "9.4.4",
     "prop-types": "15.7.2",
