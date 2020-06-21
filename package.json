@@ -9,10 +9,12 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --fix . && echo 'Lint complete.' || echo 'Lint failure'",
-    "test": "NODE_ENV=test riteway -r @babel/register -r regenerator-runtime src/**/*.test.js src/**/*.test.jsx | tap-color && echo 'Test complete.'",
-    "test:watch": "chokidar src/**/*.test.js src/**/*.test.jsx -c \"clear && yarn run -s test\" --initial --silent",
-    "watch": "chokidar src -c \"clear && yarn run -s lint && yarn run -s test\" --initial --silent"
+    "lint": "eslint .",
+    "lint:dev": "eslint --fix . && echo 'Lint pass.' || echo 'Lint failure'",
+    "test": "NODE_ENV=test riteway -r @babel/register -r regenerator-runtime src/**/*.test.js src/**/*.test.jsx",
+    "test:dev": "NODE_ENV=test riteway -r @babel/register -r regenerator-runtime src/tests.dev.js | tap-color && echo 'Test pass.'",
+    "test:watch": "chokidar src/**/*.test.js src/**/*.test.jsx -c \"clear && yarn run -s test:dev\" --initial --silent",
+    "watch": "chokidar src -c \"clear && yarn run -s lint:dev && yarn run -s test:dev\" --initial --silent"
   },
   "devDependencies": {
     "@babel/cli": "7.10.1",
