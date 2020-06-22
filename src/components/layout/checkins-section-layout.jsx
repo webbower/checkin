@@ -21,6 +21,11 @@ const CheckinsSectionLayout = ({ pageTitle, children }) => {
               <a>Checkins Home</a>
             </Link>
           </li>
+          <li>
+            <Link href="/checkins/new">
+              <a>Checkin</a>
+            </Link>
+          </li>
         </ul>
       </nav>
 

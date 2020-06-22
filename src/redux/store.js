@@ -2,12 +2,12 @@ import { useMemo } from 'react';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
-import { default as reducer, getInitialState } from './checkin.js';
+import { default as reducer } from './checkin.js';
 
 // Heavily borrowed from https://github.com/vercel/next.js/blob/canary/examples/with-redux/store.js
 let store;
 
-const initStore = (preloadedState = getInitialState()) =>
+const initStore = (preloadedState) =>
   createStore(reducer, preloadedState, composeWithDevTools(applyMiddleware()));
 
 export const initializeStore = (preloadedState) => {

@@ -9,6 +9,7 @@ import {
   getUsersList,
   getTeamsList,
   getTeamCheckinSummary,
+  getMostRecentCheckinForUser,
 } from './checkin.js';
 import { createTestUser, createTestTeam } from './testing-utils.js';
 
@@ -675,4 +676,111 @@ describe('checkin selectors: getTeamCheckinSummary()', async (assert) => {
       expected,
     });
   }
+});
+
+describe('checkin selectors: getMostRecentCheckinForUser()', async (assert) => {
+  const userId = '1';
+  const userName = 'Jane';
+  const user = createTestUser({
+    id: userId,
+    name: userName,
+  });
+  const user2Id = '2';
+  const user2Name = 'Bob';
+  const teamId = '1';
+  const teamName = 'The First Team';
+
+  const checkinCreatedAtTimestamp = 1591044882455;
+
+  {
+    const actual = getMostRecentCheckinForUser(
+      userId,
+      createTestState({
+        users: {
+          [user.id]: createTestUser({ ...user }),
+          [user2Id]: createTestUser({ id: user2Id, name: user2Name }),
+        },
+        teams: {
+          [teamId]: createTestTeam({
+            id: teamId,
+            name: teamName,
+            ownerId: user2Id,
+            users: [user2Id, user.id],
+          }),
+        },
+        checkins: [
+          createTestCheckin({
+            id: '1',
+            userId: user.id,
+            teamId,
+            createdAt: checkinCreatedAtTimestamp,
+            tasks: [
+              createTestTask({
+                id: '1',
+                description: 'Foo',
+                completed: false,
+              }),
+            ],
+            blockers: [
+              createTestBlocker({
+                id: '1',
+                description: 'Blarg!',
+              }),
+            ],
+          }),
+          createTestCheckin({
+            id: '2',
+            userId: user2Id,
+            teamId,
+            createdAt: checkinCreatedAtTimestamp + 1000,
+            tasks: [],
+            blockers: [],
+          }),
+          createTestCheckin({
+            id: '3',
+            userId: user.id,
+            teamId,
+            createdAt: checkinCreatedAtTimestamp - 1000,
+            tasks: [],
+            blockers: [],
+          }),
+        ],
+      })
+    );
+    const expected = {
+      id: '1',
+      user: user.name,
+      createdAt: checkinCreatedAtTimestamp,
+      tasks: [
+        {
+          id: '1',
+          description: 'Foo',
+          completed: false,
+        },
+      ],
+      blockers: [{ id: '1', description: 'Blarg!' }],
+    };
+
+    assert({
+      given: 'checkins and user in state',
+      should: 'return the most recent checkin for a user',
+      actual,
+      expected,
+    });
+  }
+
+  assert({
+    given: 'no checkins in state for a user',
+    should: 'return null',
+    actual: getMostRecentCheckinForUser(
+      userId,
+      createTestState({
+        users: {
+          [user.id]: createTestUser({ ...user }),
+          [user2Id]: createTestUser({ id: user2Id, name: user2Name }),
+        },
+      })
+    ),
+    expected: null,
+  });
 });

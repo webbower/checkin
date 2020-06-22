@@ -10,4 +10,6 @@ export {
   getUsersList,
   getTeamsList,
   getTeamCheckinSummary,
+  getMostRecentCheckinForUser,
 } from './checkin.js';
+export { getCurrentUserId } from './auth.js';

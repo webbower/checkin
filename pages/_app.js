@@ -1,5 +1,5 @@
 import { Provider } from 'react-redux';
-import { add, sub } from 'date-fns';
+import { sub } from 'date-fns';
 import { useStore, getInitialState } from '../src/redux';
 
 import '../src/styles/global.css';
@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }) {
           id: '1',
           userId: '1',
           teamId: '1',
-          createdAt: sub(Date.now(), { days: 1 }),
+          createdAt: sub(Date.now(), { days: 3 }),
           tasks: [
             {
               id: '1',
@@ -54,12 +54,39 @@ export default function App({ Component, pageProps }) {
           id: '2',
           userId: '1',
           teamId: '1',
-          createdAt: add(Date.now(), { days: 1 }),
+          createdAt: sub(Date.now(), { days: 1 }),
           tasks: [
             {
               id: '3',
               userId: '1',
               description: 'Use autodux for Redux module',
+              completed: false,
+            },
+          ],
+          blockers: [],
+        },
+        {
+          id: '3',
+          userId: '1',
+          teamId: '1',
+          createdAt: sub(Date.now(), { hours: 1 }),
+          tasks: [
+            {
+              id: '4',
+              userId: '1',
+              description: 'Write the README for the checkin app',
+              completed: false,
+            },
+            {
+              id: '5',
+              userId: '1',
+              description: 'Document the stack requirements',
+              completed: false,
+            },
+            {
+              id: '6',
+              userId: '1',
+              description: 'Complete 2 code reviews',
               completed: false,
             },
           ],

@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { pipe, prop, joinOn } from '../utils';
+import { pipe, prop, joinOn, curry } from '../utils';
 
 // TODO 01-06
 // √ Use immer for complex state updates
@@ -136,19 +136,23 @@ export const getTeamsList = (state) =>
     users: team.users.map(getUserNameFromStateById(state)),
   }));
 
-const getSortedCheckinsForTeam = (teamId, state) => {
-  return state.checkins
-    .filter((checkin) => checkin.teamId === teamId)
-    .sort((aCheckin, bCheckin) => {
-      if (aCheckin.createdAt < bCheckin.createdAt) {
-        return -1;
-      } else if (aCheckin.createdAt > bCheckin.createdAt) {
-        return 1;
-      }
+const getChronologicalCheckins = (predicate, state) => {
+  return state.checkins.filter(predicate).sort((aCheckin, bCheckin) => {
+    if (aCheckin.createdAt < bCheckin.createdAt) {
+      return -1;
+    } else if (aCheckin.createdAt > bCheckin.createdAt) {
+      return 1;
+    }
 
-      return 0;
-    });
+    return 0;
+  });
 };
+
+const getChronologicalCheckinsForTeam = (teamId, state) =>
+  getChronologicalCheckins((checkin) => checkin.teamId === teamId, state);
+
+const getChronologicalCheckinsForUser = (userId, state) =>
+  getChronologicalCheckins((checkin) => checkin.userId === userId, state);
 
 export const getTeamCheckinSummary = (teamId) => (state) => {
   if (!state.teams[teamId]) {
@@ -159,7 +163,7 @@ export const getTeamCheckinSummary = (teamId) => (state) => {
   return {
     id: team.id,
     name: team.name,
-    checkins: getSortedCheckinsForTeam(teamId, state).map((checkin) => ({
+    checkins: getChronologicalCheckinsForTeam(teamId, state).map((checkin) => ({
       id: checkin.id,
       user: getUserNameFromStateById(state)(checkin.userId),
       createdAt: checkin.createdAt,
@@ -168,6 +172,34 @@ export const getTeamCheckinSummary = (teamId) => (state) => {
     })),
   };
 };
+
+const exportTaskForView = ({ id, description, completed }) => ({
+  id,
+  description,
+  completed,
+});
+
+const exportBlockerForView = ({ id, description }) => ({
+  id,
+  description,
+});
+
+export const getMostRecentCheckinForUser = curry((userId, state) => {
+  const userCheckins = getChronologicalCheckinsForUser(userId, state);
+  const mostRecentCheckin = userCheckins[userCheckins.length - 1];
+
+  if (!mostRecentCheckin) {
+    return null;
+  }
+
+  return {
+    id: mostRecentCheckin.id,
+    user: getUserNameFromStateById(state)(mostRecentCheckin.userId),
+    createdAt: mostRecentCheckin.createdAt,
+    tasks: mostRecentCheckin.tasks.map(exportTaskForView),
+    blockers: mostRecentCheckin.blockers.map(exportBlockerForView),
+  };
+});
 
 // Initial State
 export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
