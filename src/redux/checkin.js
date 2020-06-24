@@ -201,11 +201,19 @@ export const getMostRecentCheckinForUser = curry((userId, state) => {
   };
 });
 
+export const getCurrentUserId = pipe(prop('auth'), prop('currentUserId'));
+
 // Initial State
-export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
+export const getInitialState = ({
+  users = {},
+  teams = {},
+  checkins = [],
+  auth = { currentUserId: '1' },
+} = {}) => ({
   users,
   teams,
   checkins,
+  auth,
 });
 
 // Reducer

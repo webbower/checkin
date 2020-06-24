@@ -11,5 +11,5 @@ export {
   getTeamsList,
   getTeamCheckinSummary,
   getMostRecentCheckinForUser,
+  getCurrentUserId,
 } from './checkin.js';
-export { getCurrentUserId } from './auth.js';
