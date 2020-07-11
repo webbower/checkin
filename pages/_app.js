@@ -27,7 +27,7 @@ export default function App({ Component, pageProps }) {
           id: '1',
           userId: '1',
           teamId: '1',
-          createdAt: sub(Date.now(), { days: 3 }),
+          createdAt: sub(Date.now(), { days: 3 }).getTime(),
           tasks: [
             {
               id: '1',
@@ -54,7 +54,7 @@ export default function App({ Component, pageProps }) {
           id: '2',
           userId: '1',
           teamId: '1',
-          createdAt: sub(Date.now(), { days: 1 }),
+          createdAt: sub(Date.now(), { days: 1 }).getTime(),
           tasks: [
             {
               id: '3',
@@ -69,7 +69,7 @@ export default function App({ Component, pageProps }) {
           id: '3',
           userId: '1',
           teamId: '1',
-          createdAt: sub(Date.now(), { hours: 1 }),
+          createdAt: sub(Date.now(), { hours: 1 }).getTime(),
           tasks: [
             {
               id: '4',
