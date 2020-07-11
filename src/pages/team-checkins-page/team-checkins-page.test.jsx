@@ -12,7 +12,7 @@ const createTestTeam = ({ id = '1', name = 'The First Team', checkins = [] } = {
   checkins,
 });
 
-describe('<TeamCheckinsPage> output', async (assert) => {
+describe('<TeamCheckinsPage> output', async assert => {
   const checkinCreatedAtTimestamp = 1591044882455;
 
   {

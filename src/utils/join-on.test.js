@@ -2,7 +2,7 @@ import { describe } from 'riteway';
 
 import joinOn from './join-on.js';
 
-describe('joinOn()', async (assert) => {
+describe('joinOn()', async assert => {
   assert({
     given: 'an object argument on first call',
     should: 'return a function',

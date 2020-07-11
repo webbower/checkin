@@ -5,7 +5,7 @@ import { UsersPage } from './users-page.jsx';
 
 import { createTestUser } from '../../redux/testing-utils.js';
 
-describe('<UsersPage> output', async (assert) => {
+describe('<UsersPage> output', async assert => {
   {
     const $ = render(<UsersPage />);
 

@@ -8,7 +8,7 @@ import { Heading } from '../../components/heading';
 import ReviewPreviousCheckinStep from './steps/review-previous-checkin-step.jsx';
 // import CreateNewCheckinStep from './steps/create-new-checkin-step.jsx';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const currentUserId = getCurrentUserId(state);
   return {
     step: 0,
@@ -45,7 +45,7 @@ const steps = [
   },
 ];
 
-const CreateNewCheckinPage = (props) => {
+const CreateNewCheckinPage = props => {
   const stepConfig = steps[props.step];
   if (!stepConfig) {
     throw new TypeError(

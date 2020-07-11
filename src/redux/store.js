@@ -7,10 +7,10 @@ import { default as reducer } from './checkin.js';
 // Heavily borrowed from https://github.com/vercel/next.js/blob/canary/examples/with-redux/store.js
 let store;
 
-const initStore = (preloadedState) =>
+const initStore = preloadedState =>
   createStore(reducer, preloadedState, composeWithDevTools(applyMiddleware()));
 
-export const initializeStore = (preloadedState) => {
+export const initializeStore = preloadedState => {
   let _store = store || initStore(preloadedState);
 
   // After navigating to a page with an initial Redux state, merge that state

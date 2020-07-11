@@ -7,7 +7,7 @@ import { Heading } from '../../components/heading';
 
 import { getTeamsList } from '../../redux';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   teams: getTeamsList(state),
 });
 

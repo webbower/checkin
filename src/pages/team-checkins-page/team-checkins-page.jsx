@@ -54,7 +54,7 @@ const TeamCheckinsPage = ({ team }) => {
           <p className="empty-message-checkins">No checkins for this team. Create one</p>
         ) : (
           <ol className="checkins-feed">
-            {team.checkins.map((checkin) => (
+            {team.checkins.map(checkin => (
               <li key={checkin.id}>
                 <Heading level={4}>
                   Checkin by {checkin.user} on {format(checkin.createdAt, 'MMM d, y')}
@@ -64,7 +64,7 @@ const TeamCheckinsPage = ({ team }) => {
                   <>
                     <Heading level={5}>Tasks:</Heading>
                     <ul className="tasks-list">
-                      {checkin.tasks.map((task) => (
+                      {checkin.tasks.map(task => (
                         <li key={task.id} className={task.completed ? 'is-completed' : undefined}>
                           <span>{task.completed ? '✅' : '❌'}</span> {task.description}
                         </li>
@@ -79,7 +79,7 @@ const TeamCheckinsPage = ({ team }) => {
                   <>
                     <Heading level={5}>Blockers:</Heading>
                     <ul className="blockers-list">
-                      {checkin.blockers.map((blocker) => (
+                      {checkin.blockers.map(blocker => (
                         <li key={blocker.id}>{blocker.description}</li>
                       ))}
                     </ul>

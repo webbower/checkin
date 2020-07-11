@@ -76,7 +76,7 @@ const createTestBlocker = ({
 
 const reduceActions = (actions = []) => actions.reduce(reducer, reducer());
 
-describe('checkin: reducer()', async (assert) => {
+describe('checkin: reducer()', async assert => {
   assert({
     given: 'no arguments',
     should: 'return initial state',
@@ -85,7 +85,7 @@ describe('checkin: reducer()', async (assert) => {
   });
 });
 
-describe('Redux action: addUser()', async (assert) => {
+describe('Redux action: addUser()', async assert => {
   assert({
     given: 'an addUser action',
     should: 'add the new user to the state',
@@ -111,7 +111,7 @@ describe('Redux action: addUser()', async (assert) => {
   });
 });
 
-describe('Redux action: addTeam()', async (assert) => {
+describe('Redux action: addTeam()', async assert => {
   const owner = createTestUser({ id: '1' });
 
   // TODO Should addTeams() add the team if users[ownerId] doesn't exist?
@@ -182,7 +182,7 @@ describe('Redux action: addTeam()', async (assert) => {
   });
 });
 
-describe('Redux action: addCheckin()', async (assert) => {
+describe('Redux action: addCheckin()', async assert => {
   const owner = createTestUser({ id: '1' });
   const team = createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id] });
   const checkinId = '1';
@@ -249,7 +249,7 @@ describe('Redux action: addCheckin()', async (assert) => {
   });
 });
 
-describe('Redux action: addTask()', async (assert) => {
+describe('Redux action: addTask()', async assert => {
   const owner = createTestUser({ id: '1' });
   const team = createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id] });
   const checkin = createTestCheckin({
@@ -385,7 +385,7 @@ describe('Redux action: addTask()', async (assert) => {
   });
 });
 
-describe('Redux action: addBlocker()', async (assert) => {
+describe('Redux action: addBlocker()', async assert => {
   const owner = createTestUser({ id: '1' });
   const team = createTestTeam({ id: '1', ownerId: owner.id, users: [owner.id] });
   const checkin = createTestCheckin({
@@ -531,7 +531,7 @@ describe('Redux action: addBlocker()', async (assert) => {
   }
 });
 
-describe('Redux selector: getUsersList()', async (assert) => {
+describe('Redux selector: getUsersList()', async assert => {
   assert({
     given: 'no users in state',
     should: 'return an empty array',
@@ -553,7 +553,7 @@ describe('Redux selector: getUsersList()', async (assert) => {
   });
 });
 
-describe('Redux selector: getTeamsList()', async (assert) => {
+describe('Redux selector: getTeamsList()', async assert => {
   assert({
     given: 'no teams in state',
     should: 'return an empty array',
@@ -589,7 +589,7 @@ describe('Redux selector: getTeamsList()', async (assert) => {
   }
 });
 
-describe('Redux selector: getTeamsList()', async (assert) => {
+describe('Redux selector: getTeamsList()', async assert => {
   const teamId = '1';
   const teamName = 'The First Team';
   const checkinCreatedAtTimestamp = 1591044882455;
@@ -681,7 +681,7 @@ describe('Redux selector: getTeamsList()', async (assert) => {
   }
 });
 
-describe('checkin selectors: getMostRecentCheckinForUser()', async (assert) => {
+describe('checkin selectors: getMostRecentCheckinForUser()', async assert => {
   const userId = '1';
   const userName = 'Jane';
   const user = createTestUser({
@@ -788,7 +788,7 @@ describe('checkin selectors: getMostRecentCheckinForUser()', async (assert) => {
   });
 });
 
-describe('Redux selector: getCurrentUserId()', async (assert) => {
+describe('Redux selector: getCurrentUserId()', async assert => {
   assert({
     given: 'a logged in user in state',
     should: 'get the logged in user ID',

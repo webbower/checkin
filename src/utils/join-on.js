@@ -1,3 +1,3 @@
-const joinOn = (stateSlice) => (id) => stateSlice[id];
+const joinOn = stateSlice => id => stateSlice[id];
 
 export default joinOn;

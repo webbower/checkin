@@ -2,7 +2,7 @@ import { describe } from 'riteway';
 
 import prop from './prop.js';
 
-describe('prop()', async (assert) => {
+describe('prop()', async assert => {
   assert({
     given: 'a string argument on first call',
     should: 'return a function',

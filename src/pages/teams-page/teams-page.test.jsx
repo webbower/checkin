@@ -3,7 +3,7 @@ import { describe } from 'riteway';
 
 import { TeamsPage } from './teams-page.jsx';
 
-describe('<TeamsPage> output', async (assert) => {
+describe('<TeamsPage> output', async assert => {
   {
     const $ = render(<TeamsPage />);
 

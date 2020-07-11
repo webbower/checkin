@@ -6,7 +6,7 @@ import { CheckinsIndexPage } from './checkins-index-page.jsx';
 const renderTestComponent = ({ pageTitle = 'Test', teams = [] } = {}) =>
   render(<CheckinsIndexPage pageTitle={pageTitle} teams={teams} />);
 
-describe('<CheckinsIndexPage> output', async (assert) => {
+describe('<CheckinsIndexPage> output', async assert => {
   {
     const $ = renderTestComponent();
 

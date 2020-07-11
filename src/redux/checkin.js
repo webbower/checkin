@@ -125,12 +125,12 @@ export const addBlocker = ({
 });
 
 // Selectors
-const getUserNameFromStateById = (state) => pipe(joinOn(state.users), prop('name'));
+const getUserNameFromStateById = state => pipe(joinOn(state.users), prop('name'));
 
 export const getUsersList = pipe(prop('users'), Object.values);
 
-export const getTeamsList = (state) =>
-  Object.values(state.teams).map((team) => ({
+export const getTeamsList = state =>
+  Object.values(state.teams).map(team => ({
     id: team.id,
     name: team.name,
     users: team.users.map(getUserNameFromStateById(state)),
@@ -149,12 +149,12 @@ const getChronologicalCheckins = (predicate, state) => {
 };
 
 const getChronologicalCheckinsForTeam = (teamId, state) =>
-  getChronologicalCheckins((checkin) => checkin.teamId === teamId, state);
+  getChronologicalCheckins(checkin => checkin.teamId === teamId, state);
 
 const getChronologicalCheckinsForUser = (userId, state) =>
-  getChronologicalCheckins((checkin) => checkin.userId === userId, state);
+  getChronologicalCheckins(checkin => checkin.userId === userId, state);
 
-export const getTeamCheckinSummary = (teamId) => (state) => {
+export const getTeamCheckinSummary = teamId => state => {
   if (!state.teams[teamId]) {
     return {};
   }
@@ -163,7 +163,7 @@ export const getTeamCheckinSummary = (teamId) => (state) => {
   return {
     id: team.id,
     name: team.name,
-    checkins: getChronologicalCheckinsForTeam(teamId, state).map((checkin) => ({
+    checkins: getChronologicalCheckinsForTeam(teamId, state).map(checkin => ({
       id: checkin.id,
       user: getUserNameFromStateById(state)(checkin.userId),
       createdAt: checkin.createdAt,
@@ -218,7 +218,7 @@ export const getInitialState = ({
 
 // Reducer
 export default function reducer(state = getInitialState(), action = {}) {
-  return produce(state, (draft) => {
+  return produce(state, draft => {
     switch (action.type) {
       case addUser().type:
         draft.users[action.payload.id] = action.payload;
@@ -248,7 +248,7 @@ export default function reducer(state = getInitialState(), action = {}) {
           return;
         }
 
-        const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+        const checkinIndex = state.checkins.findIndex(c => c.id === action.payload.checkinId);
 
         // If the checkin doesn't exist, don't modify the state
         // TODO Show error message
@@ -266,7 +266,7 @@ export default function reducer(state = getInitialState(), action = {}) {
           return;
         }
 
-        const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+        const checkinIndex = state.checkins.findIndex(c => c.id === action.payload.checkinId);
 
         // If the checkin doesn't exist, don't modify the state
         // TODO Show error message

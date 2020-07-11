@@ -1,3 +1,3 @@
-const prop = (key) => (obj) => obj[key];
+const prop = key => obj => obj[key];
 
 export default prop;

@@ -19,7 +19,7 @@ const defaultProps = {
   users: [],
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   users: getUsersList(state),
 });
 

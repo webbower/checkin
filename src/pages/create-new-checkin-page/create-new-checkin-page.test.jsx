@@ -14,7 +14,7 @@ const blockerDesc1 = 'My dog ate my code';
 
 const checkinCreatedAtTimestamp = 1591044882455;
 
-describe('<CreateNewCheckinPage>', async (assert) => {
+describe('<CreateNewCheckinPage>', async assert => {
   {
     const $ = renderTestComponent({
       previousCheckin: {
