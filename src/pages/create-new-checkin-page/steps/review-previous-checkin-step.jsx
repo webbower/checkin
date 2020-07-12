@@ -19,9 +19,10 @@ const propTypes = {
       })
     ).isRequired,
   }),
+  onComplete: PropTypes.func.isRequired,
 };
 
-const ReviewPreviousCheckinStep = ({ checkin }) => {
+const ReviewPreviousCheckinStep = ({ checkin, onComplete }) => {
   const { tasks, blockers } = checkin;
 
   return (
@@ -71,7 +72,14 @@ const ReviewPreviousCheckinStep = ({ checkin }) => {
       <p>Please check the items you completed, and add any additional items you completed.</p>
 
       <div>
-        <button type="button">Done</button>
+        <button
+          type="button"
+          onClick={() => {
+            onComplete();
+          }}
+        >
+          Done
+        </button>
       </div>
     </div>
   );

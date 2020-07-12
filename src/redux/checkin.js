@@ -124,6 +124,10 @@ export const addBlocker = ({
   },
 });
 
+export const nextCheckinStep = () => ({
+  type: 'checkin/NEXT_CHECKIN_STEP',
+});
+
 // Selectors
 const getUserNameFromStateById = state => pipe(joinOn(state.users), prop('name'));
 
@@ -202,6 +206,7 @@ export const getMostRecentCheckinForUser = curry((userId, state) => {
 });
 
 export const getCurrentUserId = pipe(prop('auth'), prop('currentUserId'));
+export const getCreateCheckinStep = pipe(prop('ui'), prop('createCheckinStep'));
 
 // Initial State
 export const getInitialState = ({
@@ -209,11 +214,15 @@ export const getInitialState = ({
   teams = {},
   checkins = [],
   auth = { currentUserId: '1' },
+  createCheckinStep = 0,
 } = {}) => ({
   users,
   teams,
   checkins,
   auth,
+  ui: {
+    createCheckinStep,
+  },
 });
 
 // Reducer
@@ -275,6 +284,10 @@ export default function reducer(state = getInitialState(), action = {}) {
         }
 
         draft.checkins[checkinIndex].blockers.push(action.payload);
+        return;
+      }
+      case nextCheckinStep().type: {
+        draft.ui.createCheckinStep = draft.ui.createCheckinStep + 1;
         return;
       }
     }

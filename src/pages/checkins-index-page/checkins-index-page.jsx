@@ -51,6 +51,10 @@ function CheckinsIndexPage({ teams }) {
                   <Link href="/checkins/team/[id]" as={`/checkins/team/${id}`}>
                     <a>View Checkins</a>
                   </Link>
+                  {' | '}
+                  <Link href={`/checkins/new?teamId=${id}`}>
+                    <a>Checkin</a>
+                  </Link>
                 </td>
               </tr>
             ))}

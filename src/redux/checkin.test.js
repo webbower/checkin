@@ -6,11 +6,13 @@ import {
   addCheckin,
   addTask,
   addBlocker,
+  nextCheckinStep,
   getUsersList,
   getTeamsList,
   getTeamCheckinSummary,
   getMostRecentCheckinForUser,
   getCurrentUserId,
+  getCreateCheckinStep,
 } from './checkin.js';
 import { createTestUser, createTestTeam } from './testing-utils.js';
 
@@ -25,11 +27,18 @@ import { createTestUser, createTestTeam } from './testing-utils.js';
 // √ Remove logic from `createTestState()` regarding zipping checkins and tasks
 // √ Use variables instead of repeated literal data in tests
 
-const createTestState = ({ users = {}, teams = {}, checkins = [], currentUserId = '1' } = {}) => ({
+const createTestState = ({
+  users = {},
+  teams = {},
+  checkins = [],
+  currentUserId = '1',
+  createCheckinStep = 0,
+} = {}) => ({
   users,
   teams,
   checkins,
   auth: { currentUserId },
+  ui: { createCheckinStep },
 });
 
 const createTestCheckin = ({
@@ -531,6 +540,15 @@ describe('Redux action: addBlocker()', async assert => {
   }
 });
 
+describe('Redux action: nextCheckinStep()', async assert => {
+  assert({
+    given: 'default checkin state',
+    should: 'increment checkin step state',
+    actual: reduceActions([nextCheckinStep()]),
+    expected: createTestState({ createCheckinStep: 1 }),
+  });
+});
+
 describe('Redux selector: getUsersList()', async assert => {
   assert({
     given: 'no users in state',
@@ -794,5 +812,21 @@ describe('Redux selector: getCurrentUserId()', async assert => {
     should: 'get the logged in user ID',
     actual: getCurrentUserId(createTestState()),
     expected: '1',
+  });
+});
+
+describe('Redux selector: getCreateCheckinStep()', async assert => {
+  assert({
+    given: 'default create checkin state',
+    should: 'return step 0',
+    actual: getCreateCheckinStep(createTestState()),
+    expected: 0,
+  });
+
+  assert({
+    given: 'completing 2 steps in the create checkin flow',
+    should: 'return step 2',
+    actual: getCreateCheckinStep(reduceActions([nextCheckinStep(), nextCheckinStep()])),
+    expected: 2,
   });
 });

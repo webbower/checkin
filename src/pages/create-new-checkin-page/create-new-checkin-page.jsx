@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { getMostRecentCheckinForUser, getCurrentUserId } from '../../redux';
+import {
+  getMostRecentCheckinForUser,
+  getCurrentUserId,
+  getCreateCheckinStep,
+  nextCheckinStep,
+} from '../../redux';
 
 import { CheckinsSectionLayout } from '../../components/layout';
 import { Heading } from '../../components/heading';
@@ -11,10 +16,12 @@ import ReviewPreviousCheckinStep from './steps/review-previous-checkin-step.jsx'
 const mapStateToProps = state => {
   const currentUserId = getCurrentUserId(state);
   return {
-    step: 0,
+    step: getCreateCheckinStep(state),
     previousCheckin: getMostRecentCheckinForUser(currentUserId, state),
   };
 };
+
+const mapDispatchToProps = { nextCheckinStep };
 
 const propTypes = {
   step: PropTypes.oneOf([0, 1, 2, 3]).isRequired,
@@ -36,6 +43,7 @@ const propTypes = {
       })
     ).isRequired,
   }),
+  nextCheckinStep: PropTypes.func.isRequired,
 };
 
 const steps = [
@@ -55,11 +63,15 @@ const CreateNewCheckinPage = props => {
 
   const { component: StepComponent, getPropsForComponent } = stepConfig;
 
+  const handleStepCompleteClick = () => {
+    props.nextCheckinStep();
+  };
+
   return (
     <CheckinsSectionLayout pageTitle="Create a checkin">
       <Heading level={3}>Create a checkin</Heading>
 
-      <StepComponent {...getPropsForComponent(props)} />
+      <StepComponent {...getPropsForComponent(props)} onComplete={handleStepCompleteClick} />
     </CheckinsSectionLayout>
   );
 };
@@ -67,4 +79,4 @@ const CreateNewCheckinPage = props => {
 CreateNewCheckinPage.propTypes = propTypes;
 
 export { CreateNewCheckinPage };
-export default connect(mapStateToProps)(CreateNewCheckinPage);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateNewCheckinPage);
