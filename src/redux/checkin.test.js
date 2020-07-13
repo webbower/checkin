@@ -607,7 +607,7 @@ describe('Redux selector: getTeamsList()', async assert => {
   }
 });
 
-describe('Redux selector: getTeamsList()', async assert => {
+describe('Redux selector: getTeamCheckinSummary()', async assert => {
   const teamId = '1';
   const teamName = 'The First Team';
   const checkinCreatedAtTimestamp = 1591044882455;
