@@ -1,5 +1,6 @@
 import produce from 'immer';
-import { pipe, prop, joinOn, curry } from '../utils';
+import * as R from 'ramda';
+import { joinOn } from '../utils';
 
 // TODO 01-06
 // √ Use immer for complex state updates
@@ -129,9 +130,9 @@ export const nextCheckinStep = () => ({
 });
 
 // Selectors
-const getUserNameFromStateById = state => pipe(joinOn(state.users), prop('name'));
+const getUserNameFromStateById = state => R.pipe(joinOn(state.users), R.prop('name'));
 
-export const getUsersList = pipe(prop('users'), Object.values);
+export const getUsersList = R.pipe(R.prop('users'), Object.values);
 
 export const getTeamsList = state =>
   Object.values(state.teams).map(team => ({
@@ -177,18 +178,11 @@ export const getTeamCheckinSummary = teamId => state => {
   };
 };
 
-const exportTaskForView = ({ id, description, completed }) => ({
-  id,
-  description,
-  completed,
-});
+const exportTaskForView = R.pick(['id', 'description', 'completed']);
 
-const exportBlockerForView = ({ id, description }) => ({
-  id,
-  description,
-});
+const exportBlockerForView = R.pick(['id', 'description']);
 
-export const getMostRecentCheckinForUser = curry((userId, state) => {
+export const getMostRecentCheckinForUser = R.curry((userId, state) => {
   const userCheckins = getChronologicalCheckinsForUser(userId, state);
   const mostRecentCheckin = userCheckins[userCheckins.length - 1];
 
@@ -205,8 +199,8 @@ export const getMostRecentCheckinForUser = curry((userId, state) => {
   };
 });
 
-export const getCurrentUserId = pipe(prop('auth'), prop('currentUserId'));
-export const getCreateCheckinStep = pipe(prop('ui'), prop('createCheckinStep'));
+export const getCurrentUserId = R.pipe(R.prop('auth'), R.prop('currentUserId'));
+export const getCreateCheckinStep = R.pipe(R.prop('ui'), R.prop('createCheckinStep'));
 
 // Initial State
 export const getInitialState = ({

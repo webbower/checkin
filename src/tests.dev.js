@@ -1,6 +1,4 @@
 import './utils/join-on.test.js';
-import './utils/pipe.test.js';
-import './utils/prop.test.js';
 
 import './redux/checkin.test.js';
 

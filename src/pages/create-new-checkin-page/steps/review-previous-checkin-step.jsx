@@ -23,6 +23,24 @@ const propTypes = {
 };
 
 const ReviewPreviousCheckinStep = ({ checkin, onComplete }) => {
+  // TODO Figure out how to make `checkin` exist on the backend for SSR
+  // NOTE Temporary guard for lack of state in SSR
+  if (!checkin) {
+    return (
+      <>
+        <p>No previous checkins</p>
+
+        <button
+          type="button"
+          onClick={() => {
+            onComplete();
+          }}
+        >
+          Next
+        </button>
+      </>
+    );
+  }
   const { tasks, blockers } = checkin;
 
   return (
