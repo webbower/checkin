@@ -6,7 +6,12 @@ export {
   addCheckin,
   addTask,
   addBlocker,
+  nextCheckinStep,
   getInitialState,
   getUsersList,
   getTeamsList,
+  getTeamCheckinSummary,
+  getMostRecentCheckinForUser,
+  getCurrentUserId,
+  getCreateCheckinStep,
 } from './checkin.js';

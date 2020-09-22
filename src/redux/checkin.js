@@ -1,5 +1,6 @@
 import produce from 'immer';
-import { pipe, prop, joinOn } from '../utils';
+import * as R from 'ramda';
+import { joinOn } from '../utils';
 
 // TODO 01-06
 // √ Use immer for complex state updates
@@ -124,26 +125,103 @@ export const addBlocker = ({
   },
 });
 
-// Selectors
-export const getUsersList = pipe(prop('users'), Object.values);
+export const nextCheckinStep = () => ({
+  type: 'checkin/NEXT_CHECKIN_STEP',
+});
 
-export const getTeamsList = (state) =>
-  Object.values(state.teams).map((team) => ({
+// Selectors
+const getUserNameFromStateById = state => R.pipe(joinOn(state.users), R.prop('name'));
+
+export const getUsersList = R.pipe(R.prop('users'), Object.values);
+
+export const getTeamsList = state =>
+  Object.values(state.teams).map(team => ({
     id: team.id,
     name: team.name,
-    users: team.users.map(pipe(joinOn(state.users), prop('name'))),
+    users: team.users.map(getUserNameFromStateById(state)),
   }));
 
+const getChronologicalCheckins = (predicate, state) => {
+  return state.checkins.filter(predicate).sort((aCheckin, bCheckin) => {
+    if (aCheckin.createdAt < bCheckin.createdAt) {
+      return -1;
+    } else if (aCheckin.createdAt > bCheckin.createdAt) {
+      return 1;
+    }
+
+    return 0;
+  });
+};
+
+const getChronologicalCheckinsForTeam = (teamId, state) =>
+  getChronologicalCheckins(checkin => checkin.teamId === teamId, state);
+
+const getChronologicalCheckinsForUser = (userId, state) =>
+  getChronologicalCheckins(checkin => checkin.userId === userId, state);
+
+export const getTeamCheckinSummary = teamId => state => {
+  if (!state.teams[teamId]) {
+    return {};
+  }
+
+  const team = state.teams[teamId];
+  return {
+    id: team.id,
+    name: team.name,
+    checkins: getChronologicalCheckinsForTeam(teamId, state).map(checkin => ({
+      id: checkin.id,
+      user: getUserNameFromStateById(state)(checkin.userId),
+      createdAt: checkin.createdAt,
+      tasks: checkin.tasks,
+      blockers: checkin.blockers,
+    })),
+  };
+};
+
+const exportTaskForView = R.pick(['id', 'description', 'completed']);
+
+const exportBlockerForView = R.pick(['id', 'description']);
+
+export const getMostRecentCheckinForUser = R.curry((userId, state) => {
+  const userCheckins = getChronologicalCheckinsForUser(userId, state);
+  const mostRecentCheckin = userCheckins[userCheckins.length - 1];
+
+  if (!mostRecentCheckin) {
+    return null;
+  }
+
+  return {
+    id: mostRecentCheckin.id,
+    user: getUserNameFromStateById(state)(mostRecentCheckin.userId),
+    createdAt: mostRecentCheckin.createdAt,
+    tasks: mostRecentCheckin.tasks.map(exportTaskForView),
+    blockers: mostRecentCheckin.blockers.map(exportBlockerForView),
+  };
+});
+
+export const getCurrentUserId = R.pipe(R.prop('auth'), R.prop('currentUserId'));
+export const getCreateCheckinStep = R.pipe(R.prop('ui'), R.prop('createCheckinStep'));
+
 // Initial State
-export const getInitialState = ({ users = {}, teams = {}, checkins = [] } = {}) => ({
+export const getInitialState = ({
+  users = {},
+  teams = {},
+  checkins = [],
+  auth = { currentUserId: '1' },
+  createCheckinStep = 0,
+} = {}) => ({
   users,
   teams,
   checkins,
+  auth,
+  ui: {
+    createCheckinStep,
+  },
 });
 
 // Reducer
 export default function reducer(state = getInitialState(), action = {}) {
-  return produce(state, (draft) => {
+  return produce(state, draft => {
     switch (action.type) {
       case addUser().type:
         draft.users[action.payload.id] = action.payload;
@@ -173,7 +251,7 @@ export default function reducer(state = getInitialState(), action = {}) {
           return;
         }
 
-        const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+        const checkinIndex = state.checkins.findIndex(c => c.id === action.payload.checkinId);
 
         // If the checkin doesn't exist, don't modify the state
         // TODO Show error message
@@ -191,7 +269,7 @@ export default function reducer(state = getInitialState(), action = {}) {
           return;
         }
 
-        const checkinIndex = state.checkins.findIndex((c) => c.id === action.payload.checkinId);
+        const checkinIndex = state.checkins.findIndex(c => c.id === action.payload.checkinId);
 
         // If the checkin doesn't exist, don't modify the state
         // TODO Show error message
@@ -200,6 +278,10 @@ export default function reducer(state = getInitialState(), action = {}) {
         }
 
         draft.checkins[checkinIndex].blockers.push(action.payload);
+        return;
+      }
+      case nextCheckinStep().type: {
+        draft.ui.createCheckinStep = draft.ui.createCheckinStep + 1;
         return;
       }
     }

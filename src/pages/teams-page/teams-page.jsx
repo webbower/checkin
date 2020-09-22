@@ -20,7 +20,7 @@ const defaultProps = {
   teams: [],
 };
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   teams: getTeamsList(state),
 });
 

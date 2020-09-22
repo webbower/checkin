@@ -1,4 +1,5 @@
 import { Provider } from 'react-redux';
+import { sub } from 'date-fns';
 import { useStore, getInitialState } from '../src/redux';
 
 import '../src/styles/global.css';
@@ -21,6 +22,77 @@ export default function App({ Component, pageProps }) {
           users: ['1'],
         },
       },
+      checkins: [
+        {
+          id: '1',
+          userId: '1',
+          teamId: '1',
+          createdAt: sub(Date.now(), { days: 3 }).getTime(),
+          tasks: [
+            {
+              id: '1',
+              userId: '1',
+              description: 'Migrate to Next.js',
+              completed: true,
+            },
+            {
+              id: '2',
+              userId: '1',
+              description: 'Build the Checkin app',
+              completed: false,
+            },
+          ],
+          blockers: [
+            {
+              id: '1',
+              userId: '1',
+              description: 'My dog ate my code',
+            },
+          ],
+        },
+        {
+          id: '2',
+          userId: '1',
+          teamId: '1',
+          createdAt: sub(Date.now(), { days: 1 }).getTime(),
+          tasks: [
+            {
+              id: '3',
+              userId: '1',
+              description: 'Use autodux for Redux module',
+              completed: false,
+            },
+          ],
+          blockers: [],
+        },
+        {
+          id: '3',
+          userId: '1',
+          teamId: '1',
+          createdAt: sub(Date.now(), { hours: 1 }).getTime(),
+          tasks: [
+            {
+              id: '4',
+              userId: '1',
+              description: 'Write the README for the checkin app',
+              completed: false,
+            },
+            {
+              id: '5',
+              userId: '1',
+              description: 'Document the stack requirements',
+              completed: false,
+            },
+            {
+              id: '6',
+              userId: '1',
+              description: 'Complete 2 code reviews',
+              completed: false,
+            },
+          ],
+          blockers: [],
+        },
+      ],
     })
   );
 

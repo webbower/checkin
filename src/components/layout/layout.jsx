@@ -35,6 +35,11 @@ const Layout = ({ children, pageTitle }) => (
               <a>Teams</a>
             </Link>
           </li>
+          <li>
+            <Link href="/checkins/">
+              <a>Checkins</a>
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>
